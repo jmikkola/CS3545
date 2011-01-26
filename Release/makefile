@@ -23,19 +23,19 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: CS3545
+all: SDL_test
 
 # Tool invocations
-CS3545: $(OBJS) $(USER_OBJS)
+SDL_test: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc  -o"CS3545" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc  -o"SDL_test" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(C_DEPS)$(EXECUTABLES) CS3545
+	-$(RM) $(OBJS)$(C_DEPS)$(EXECUTABLES) SDL_test
 	-@echo ' '
 
 .PHONY: all clean dependents
