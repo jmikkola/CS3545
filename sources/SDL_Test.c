@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 	//Initialize window
-	screen = SDL_SetVideoMode(1024, 768, 32, SDL_OPENGL);
+	screen = SDL_SetVideoMode(800, 600, 32, SDL_OPENGL);
 	if(!screen) {
 		printf("Unable to set video mode: %s\n", SDL_GetError());
 		return 1;
@@ -62,9 +62,12 @@ static void r_drawFrame () {
 	glColor3f(1.0, 1.0, 1.0);
 
 	glBegin(GL_POLYGON);
-		glVertex3f(-0.5, 0.0, 0.0);
-		glVertex3f(0.5, 0.0, 0.0);
-		glVertex3f(0.0, 1.0, 0.0);
+		glColor3f(1,1,0);
+		glVertex3f(-0.5, -0.5, 0.0);
+		glColor3f(1,0,1);
+		glVertex3f(0.5, -0.5, 0.0);
+		glColor3f(0,1,1);
+		glVertex3f(0.0, 0.5, 0.0);
 	glEnd();
 
 	SDL_GL_SwapBuffers();
