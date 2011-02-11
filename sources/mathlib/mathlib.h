@@ -2,6 +2,12 @@
 #ifndef MATHLIB_H
 #define MATHLIB_H
 
+// Constants
+#define M_PI_DIV180 0.01745329251994329576
+#define _X 0
+#define _Y 1
+#define _Z 2
+
 // Vector types
 typedef float vect_t;
 typedef vect_t vect2_t[2];
@@ -51,6 +57,9 @@ typedef vect_t vect5_t[5];
 //
 // Print a vector
 #define prvect(v) {printf("%.2f %.2f %.3f\n", v[0], v[1], v[2]);}
+//
+// Set a matrix to the identity
+void glmatrix_identity (float *m);
 //
 // End header guard
 #endif
