@@ -4,13 +4,13 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../sources/SDL_Test.c 
+../sources/main.c 
 
 OBJS += \
-./sources/SDL_Test.o 
+./sources/main.o 
 
 C_DEPS += \
-./sources/SDL_Test.d 
+./sources/main.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

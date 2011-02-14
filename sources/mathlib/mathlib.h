@@ -4,6 +4,8 @@
 
 // Constants
 #define M_PI_DIV180 0.01745329251994329576
+#define M_PI 3.14159265358979323846
+#define M_PI_DIV2 1.57079632679489661923
 #define _X 0
 #define _Y 1
 #define _Z 2

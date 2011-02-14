@@ -313,9 +313,12 @@ static void camera_init() {
 	glmatrix_identity(translateMatrix);
 }
 
-//Rotations just increase/decrease the angle and compute a new radian value.
 static void camera_rotateX (float degree) {
 	camera.angleRad[_X] += degree * M_PI_DIV180;
+	if (degree > 0 && camera.angleRad[_X] > M_PI_DIV2)
+		camera.angleRad[_X] = M_PI_DIV2;
+	else if (degree < 0 && camera.angleRad[_X] < -M_PI_DIV2)
+		camera.angleRad[_X] = -M_PI_DIV2;
 }
 
 static void camera_rotateY (float degree) {
