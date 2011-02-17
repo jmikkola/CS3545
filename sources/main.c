@@ -1,5 +1,5 @@
 /*
- * File: SDL_Test.c
+ * File: main.c
  * Author: Jeremy Mikkola
  * Last modified: 12/02/2011
  *
@@ -12,9 +12,11 @@
 #include <SDL/SDL_opengl.h>
 #include <stdio.h>
 #include "mathlib/mathlib.h"
+#include "tga_loader.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
+#define MAX_NUM_TEXTURES 16
 
 
 typedef struct {
@@ -47,6 +49,11 @@ static float xRotMatrix[16],
 			 yRotMatrix[16],
 			 zRotMatrix[16],
 			 translateMatrix[16];
+
+int myGLTexture[MAX_NUM_TEXTURES],
+	myTexWidth[MAX_NUM_TEXTURES],
+	myTexHeight[MAX_NUM_TEXTURES],
+	myTexBPP[MAX_NUM_TEXTURES];
 
 
 int main (int argc, char* argv[]) {
@@ -164,11 +171,26 @@ static void input_update () {
  * Sets up the window
  */
 static void r_init () {
+
 	ratio = WINDOW_WIDTH;
 	ratio /= 1.0f * WINDOW_HEIGHT;
 
 	glEnable (GL_DEPTH_TEST);
-	glEnable (GL_TEXTURE_2D);
+	glEnable(GL_CULL_FACE);
+//	glEnable (GL_TEXTURE_2D);
+
+	r_image_loadTGA("sources/plaster01.tga",
+			&myGLTexture[0], &myTexWidth[0], &myTexHeight[0], &myTexBPP[0]);
+	r_image_loadTGA("sources/al01.tga",
+			&myGLTexture[1], &myTexWidth[1], &myTexHeight[1], &myTexBPP[1]);
+	r_image_loadTGA("sources/al02.tga",
+			&myGLTexture[2], &myTexWidth[2], &myTexHeight[2], &myTexBPP[2]);
+	r_image_loadTGA("sources/leaf.tga",
+			&myGLTexture[3], &myTexWidth[3], &myTexHeight[3], &myTexBPP[3]);
+	r_image_loadTGA("sources/snow.tga",
+			&myGLTexture[4], &myTexWidth[4], &myTexHeight[4], &myTexBPP[4]);
+	r_image_loadTGA("sources/grass.tga",
+			&myGLTexture[5], &myTexWidth[5], &myTexHeight[5], &myTexBPP[5]);
 
 	camera_init();
 	r_setupProjection();
@@ -248,57 +270,61 @@ static void cube (float size, float offsetX, float offsetY, float offsetZ) {
 	glPushMatrix ();
 	glTranslatef (offsetX, offsetY, offsetZ);
 	float side = size * 0.5f;
+
+	// Set up coloring
+	glEnable(GL_TEXTURE_2D);
+	glColor3f (1,1,1);
+
 	// Front face
+	glBindTexture( GL_TEXTURE_2D, myGLTexture[0] );
 	glBegin (GL_POLYGON);
-		glColor3f (1,0,0);
-		glVertex3f (-side, -side, side);
-		glColor3f (1,1,0);
-		glVertex3f ( side, -side, side);
-		glColor3f (0,1,0);
-		glVertex3f ( side,  side, side);
-		glColor3f (0,0,0);
-		glVertex3f (-side,  side, side);
+		glTexCoord2f(0.0, 0.0); glVertex3f (-side, -side, side);
+		glTexCoord2f(3.0, 0.0); glVertex3f ( side, -side, side);
+		glTexCoord2f(3.0, 3.0); glVertex3f ( side,  side, side);
+		glTexCoord2f(0.0, 3.0); glVertex3f (-side,  side, side);
 	glEnd ();
 	// Back face
-	glColor3f (0,1,1);
+	glBindTexture( GL_TEXTURE_2D, myGLTexture[1] );
 	glBegin (GL_POLYGON);
-		glVertex3f (side, -side, -side);
-		glVertex3f (-side, -side, -side);
-		glVertex3f (-side,  side, -side);
-		glVertex3f ( side,  side, -side);
+		glTexCoord2f(0.0, 0.0); glVertex3f (side, -side, -side);
+		glTexCoord2f(3.0, 0.0); glVertex3f (-side, -side, -side);
+		glTexCoord2f(3.0, 3.0); glVertex3f (-side,  side, -side);
+		glTexCoord2f(0.0, 3.0); glVertex3f ( side,  side, -side);
 	glEnd ();
 	// Left face
-	glColor3f (0,1,0);
+	glBindTexture( GL_TEXTURE_2D, myGLTexture[2] );
 	glBegin (GL_POLYGON);
-		glVertex3f (-side, -side,  side);
-		glVertex3f (-side,  side,  side);
-		glVertex3f (-side,  side, -side);
-		glVertex3f (-side, -side, -side);
+		glTexCoord2f(0.0, 0.0); glVertex3f (-side, -side,  side);
+		glTexCoord2f(1.0, 0.0); glVertex3f (-side,  side,  side);
+		glTexCoord2f(1.0, 1.0); glVertex3f (-side,  side, -side);
+		glTexCoord2f(0.0, 1.0); glVertex3f (-side, -side, -side);
 	glEnd ();
 	// Right face
-	glColor3f (1,0,1);
+	glBindTexture( GL_TEXTURE_2D, myGLTexture[3] );
 	glBegin (GL_POLYGON);
-		glVertex3f (side, -side, side);
-		glVertex3f (side,  side, side);
-		glVertex3f (side,  side, -side);
-		glVertex3f (side, -side, -side);
+		glTexCoord2f(0.0, 0.0); glVertex3f (side, -side, -side);
+		glTexCoord2f(2.0, 0.0); glVertex3f (side,  side, -side);
+		glTexCoord2f(2.0, 2.0); glVertex3f (side,  side,  side);
+		glTexCoord2f(0.0, 2.0); glVertex3f (side, -side,  side);
 	glEnd ();
 	// Bottom face
-	glColor3f (0,0,1);
+	glBindTexture( GL_TEXTURE_2D, myGLTexture[4] );
 	glBegin (GL_POLYGON);
-		glVertex3f (-side, -side,  side);
-		glVertex3f ( side, -side,  side);
-		glVertex3f ( side, -side, -side);
-		glVertex3f (-side, -side, -side);
+		glTexCoord2f(0.0, 0.0); glVertex3f (-side, -side,  side);
+		glTexCoord2f(1.0, 0.0); glVertex3f (-side, -side, -side);
+		glTexCoord2f(1.0, 1.0); glVertex3f ( side, -side, -side);
+		glTexCoord2f(0.0, 1.0); glVertex3f ( side, -side,  side);
 	glEnd ();
 	// Top face
-	glColor3f (1,1,0);
+	glBindTexture( GL_TEXTURE_2D, myGLTexture[5] );
 	glBegin (GL_POLYGON);
-		glVertex3f (-side, side,  side);
-		glVertex3f ( side, side,  side);
-		glVertex3f ( side, side, -side);
-		glVertex3f (-side, side, -side);
+		glTexCoord2f(0.0, 0.0); glVertex3f (-side, side,  side);
+		glTexCoord2f(1.0, 0.0); glVertex3f ( side, side,  side);
+		glTexCoord2f(1.0, 1.0); glVertex3f ( side, side, -side);
+		glTexCoord2f(0.0, 1.0); glVertex3f (-side, side, -side);
 	glEnd ();
+
+	glDisable(GL_TEXTURE_2D);
 
 	glPopMatrix ();
 }

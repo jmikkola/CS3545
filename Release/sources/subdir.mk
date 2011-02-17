@@ -4,13 +4,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../sources/main.c 
+../sources/main.c \
+../sources/tga_loader.c 
 
 OBJS += \
-./sources/main.o 
+./sources/main.o \
+./sources/tga_loader.o 
 
 C_DEPS += \
-./sources/main.d 
+./sources/main.d \
+./sources/tga_loader.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
