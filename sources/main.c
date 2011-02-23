@@ -179,17 +179,17 @@ static void r_init () {
 	glEnable(GL_CULL_FACE);
 //	glEnable (GL_TEXTURE_2D);
 
-	r_image_loadTGA("sources/plaster01.tga",
+	r_image_loadTGA("images/plaster01.tga",
 			&myGLTexture[0], &myTexWidth[0], &myTexHeight[0], &myTexBPP[0]);
-	r_image_loadTGA("sources/al01.tga",
+	r_image_loadTGA("images/al01.tga",
 			&myGLTexture[1], &myTexWidth[1], &myTexHeight[1], &myTexBPP[1]);
-	r_image_loadTGA("sources/al02.tga",
+	r_image_loadTGA("images/al02.tga",
 			&myGLTexture[2], &myTexWidth[2], &myTexHeight[2], &myTexBPP[2]);
-	r_image_loadTGA("sources/leaf.tga",
+	r_image_loadTGA("images/leaf.tga",
 			&myGLTexture[3], &myTexWidth[3], &myTexHeight[3], &myTexBPP[3]);
-	r_image_loadTGA("sources/snow.tga",
+	r_image_loadTGA("images/snow.tga",
 			&myGLTexture[4], &myTexWidth[4], &myTexHeight[4], &myTexBPP[4]);
-	r_image_loadTGA("sources/grass.tga",
+	r_image_loadTGA("images/grass.tga",
 			&myGLTexture[5], &myTexWidth[5], &myTexHeight[5], &myTexBPP[5]);
 
 	camera_init();
