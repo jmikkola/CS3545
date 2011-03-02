@@ -5,6 +5,7 @@
  *      Author: jeremy
  */
 #include "tga_loader.h"
+#include "../common.h"
 #include <SDL/SDL_opengl.h>
 #include <sys/stat.h>
 

@@ -13,6 +13,9 @@ EXECUTABLES :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
+sources/tga_loader \
 sources \
+sources/models \
 sources/mathlib \
+sources/materials \
 

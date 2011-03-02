@@ -3,7 +3,8 @@
 
 #define HEADER_SIZE 18
 
-typedef unsigned char byte;
+//typedef unsigned char byte;
+
 typedef struct _IO_FILE FILE;
 
 typedef struct {

@@ -11,8 +11,10 @@
 #include <SDL/SDL_main.h>
 #include <SDL/SDL_opengl.h>
 #include <stdio.h>
+#include "common.h"
 #include "mathlib/mathlib.h"
-#include "tga_loader.h"
+#include "models/renderer_models.h"
+#include "materials/renderer_materials.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -42,18 +44,18 @@ static void camera_translateStrafe (float dist);
 
 static camera_t camera;
 static int user_exit = 0, free_move = 0;
-static int keys_down[256];
+static int keys_down[330];
 static float ratio, size = 2.0f;
 //Maintain a matrix for each rotation and one for translation
 static float xRotMatrix[16],
 			 yRotMatrix[16],
 			 zRotMatrix[16],
 			 translateMatrix[16];
-
-int myGLTexture[MAX_NUM_TEXTURES],
-	myTexWidth[MAX_NUM_TEXTURES],
-	myTexHeight[MAX_NUM_TEXTURES],
-	myTexBPP[MAX_NUM_TEXTURES];
+static const GLfloat flipMatrix[16] =
+		{1.0, 0.0,  0.0, 0.0,
+		 0.0, 0.0, -1.0, 0.0,
+		 0.0, 1.0,  0.0, 0.0,
+		 0.0, 0.0,  0.0, 1.0};
 
 
 int main (int argc, char* argv[]) {
@@ -129,7 +131,7 @@ static void input_mouseMove (int xPos, int yPos) {
 
 	// Update direction.
 	camera_rotateX( dy * 0.5f);
-	camera_rotateY(-dx * 0.5f);
+	camera_rotateZ(-dx * 0.5f);
 	// Reset cursor to center
 	SDL_WarpMouse(halfWinWidth, halfWinHeight);
 }
@@ -144,13 +146,26 @@ static void input_mouseMove (int xPos, int yPos) {
 static void input_update () {
 	// WASD movement
 	if(keys_down[SDLK_w])
-		camera_translateForward(-0.05);
+		camera_translateForward(-1);
 	if(keys_down[SDLK_s])
-		camera_translateForward(0.05);
+		camera_translateForward(1);
 	if(keys_down[SDLK_a])
-		camera_translateStrafe(-0.05);
+		camera_translateStrafe(-1);
 	if(keys_down[SDLK_d])
-		camera_translateStrafe(0.05);
+		camera_translateStrafe(1);
+
+	if(keys_down[SDLK_z])
+		camera.position[_X] += 1;
+	if(keys_down[SDLK_x])
+		camera.position[_X] -= 1;
+	if(keys_down[SDLK_c])
+		camera.position[_Y] += 1;
+	if(keys_down[SDLK_v])
+		camera.position[_Y] -= 1;
+	if(keys_down[SDLK_b])
+		camera.position[_Z] += 1;
+	if(keys_down[SDLK_n])
+		camera.position[_Z] -= 1;
 
 	// r for reset
 	if(keys_down[SDLK_r]){
@@ -177,20 +192,11 @@ static void r_init () {
 
 	glEnable (GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-//	glEnable (GL_TEXTURE_2D);
+	glEnable(GL_TEXTURE_2D);
 
-	r_image_loadTGA("images/plaster01.tga",
-			&myGLTexture[0], &myTexWidth[0], &myTexHeight[0], &myTexBPP[0]);
-	r_image_loadTGA("images/al01.tga",
-			&myGLTexture[1], &myTexWidth[1], &myTexHeight[1], &myTexBPP[1]);
-	r_image_loadTGA("images/al02.tga",
-			&myGLTexture[2], &myTexWidth[2], &myTexHeight[2], &myTexBPP[2]);
-	r_image_loadTGA("images/leaf.tga",
-			&myGLTexture[3], &myTexWidth[3], &myTexHeight[3], &myTexBPP[3]);
-	r_image_loadTGA("images/snow.tga",
-			&myGLTexture[4], &myTexWidth[4], &myTexHeight[4], &myTexBPP[4]);
-	r_image_loadTGA("images/grass.tga",
-			&myGLTexture[5], &myTexWidth[5], &myTexHeight[5], &myTexBPP[5]);
+	// Load model
+	char name[] = "models/submarine.ASE";
+	renderer_model_loadASE(name, efalse);
 
 	camera_init();
 	r_setupProjection();
@@ -232,9 +238,9 @@ static void r_setupModelview() {
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	glMultMatrixf(zRotMatrix);
+	glMultMatrixf(flipMatrix);
 	glMultMatrixf(xRotMatrix);
-	glMultMatrixf(yRotMatrix);
+	glMultMatrixf(zRotMatrix);
 	glMultMatrixf(translateMatrix);
 }
 
@@ -250,83 +256,9 @@ static void r_drawFrame () {
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	r_setupModelview();
 
-	// Set up base matrix
-
-	// Cube 1
-    for (i = 0; i < 3; i++) {
-    	for (j = 0; j < 3; j++) {
-    		if (j == 1 && i == 1) continue;
-    		for (k = 0; k < 3; k++) {
-    			if (k == 1 && (i == 1 || j == 1)) continue;
-    			cube (size, offsets[i], offsets[j], offsets[k]);
-    		}
-    	}
-    }
+	renderer_model_drawASE(0);
 
 	SDL_GL_SwapBuffers ();
-}
-
-static void cube (float size, float offsetX, float offsetY, float offsetZ) {
-	glPushMatrix ();
-	glTranslatef (offsetX, offsetY, offsetZ);
-	float side = size * 0.5f;
-
-	// Set up coloring
-	glEnable(GL_TEXTURE_2D);
-	glColor3f (1,1,1);
-
-	// Front face
-	glBindTexture( GL_TEXTURE_2D, myGLTexture[0] );
-	glBegin (GL_POLYGON);
-		glTexCoord2f(0.0, 0.0); glVertex3f (-side, -side, side);
-		glTexCoord2f(3.0, 0.0); glVertex3f ( side, -side, side);
-		glTexCoord2f(3.0, 3.0); glVertex3f ( side,  side, side);
-		glTexCoord2f(0.0, 3.0); glVertex3f (-side,  side, side);
-	glEnd ();
-	// Back face
-	glBindTexture( GL_TEXTURE_2D, myGLTexture[1] );
-	glBegin (GL_POLYGON);
-		glTexCoord2f(0.0, 0.0); glVertex3f (side, -side, -side);
-		glTexCoord2f(3.0, 0.0); glVertex3f (-side, -side, -side);
-		glTexCoord2f(3.0, 3.0); glVertex3f (-side,  side, -side);
-		glTexCoord2f(0.0, 3.0); glVertex3f ( side,  side, -side);
-	glEnd ();
-	// Left face
-	glBindTexture( GL_TEXTURE_2D, myGLTexture[2] );
-	glBegin (GL_POLYGON);
-		glTexCoord2f(0.0, 0.0); glVertex3f (-side, -side,  side);
-		glTexCoord2f(1.0, 0.0); glVertex3f (-side,  side,  side);
-		glTexCoord2f(1.0, 1.0); glVertex3f (-side,  side, -side);
-		glTexCoord2f(0.0, 1.0); glVertex3f (-side, -side, -side);
-	glEnd ();
-	// Right face
-	glBindTexture( GL_TEXTURE_2D, myGLTexture[3] );
-	glBegin (GL_POLYGON);
-		glTexCoord2f(0.0, 0.0); glVertex3f (side, -side, -side);
-		glTexCoord2f(2.0, 0.0); glVertex3f (side,  side, -side);
-		glTexCoord2f(2.0, 2.0); glVertex3f (side,  side,  side);
-		glTexCoord2f(0.0, 2.0); glVertex3f (side, -side,  side);
-	glEnd ();
-	// Bottom face
-	glBindTexture( GL_TEXTURE_2D, myGLTexture[4] );
-	glBegin (GL_POLYGON);
-		glTexCoord2f(0.0, 0.0); glVertex3f (-side, -side,  side);
-		glTexCoord2f(1.0, 0.0); glVertex3f (-side, -side, -side);
-		glTexCoord2f(1.0, 1.0); glVertex3f ( side, -side, -side);
-		glTexCoord2f(0.0, 1.0); glVertex3f ( side, -side,  side);
-	glEnd ();
-	// Top face
-	glBindTexture( GL_TEXTURE_2D, myGLTexture[5] );
-	glBegin (GL_POLYGON);
-		glTexCoord2f(0.0, 0.0); glVertex3f (-side, side,  side);
-		glTexCoord2f(1.0, 0.0); glVertex3f ( side, side,  side);
-		glTexCoord2f(1.0, 1.0); glVertex3f ( side, side, -side);
-		glTexCoord2f(0.0, 1.0); glVertex3f (-side, side, -side);
-	glEnd ();
-
-	glDisable(GL_TEXTURE_2D);
-
-	glPopMatrix ();
 }
 
 // ==== Camera ====
@@ -356,24 +288,27 @@ static void camera_rotateZ (float degree) {
 }
 
 static void camera_translateForward(float dist) {
-	float theta = camera.angleRad[_X], phi = camera.angleRad[_Y];
+	float theta = camera.angleRad[_X], phi = camera.angleRad[_Z];
+	float cosTheta = cos(theta), sinTheta = sin(theta),
+		  cosPhi = cos(phi), sinPhi = sin(phi);
 	if (free_move) {
 		// Free movement
-		camera.position[_X] += dist * cos(theta) * sin(phi);
-		camera.position[_Y] += dist * sin(theta);
-		camera.position[_Z] += dist * cos(theta) * cos(phi);
+		camera.position[_X] += dist * cosTheta * sinPhi;
+		camera.position[_Y] -= dist * cosTheta * cosPhi;
+		camera.position[_Z] += dist * sinTheta;
 	} else {
 		// Person movement
-		camera.position[_X] +=  dist * sin(phi);
-		camera.position[_Y] +=  0;
-		camera.position[_Z] +=  dist * cos(phi);
+		camera.position[_X] +=  dist * sinPhi;
+		camera.position[_Y] -=  dist * cosPhi;
+		camera.position[_Z] +=  0;
 	}
 }
 
 static void camera_translateStrafe(float dist) {
-	float phi = camera.angleRad[_Y] + 3.14159/2.0;
+	float phi = camera.angleRad[_Z] + 3.14159/2.0;
+	float cosPhi = cos(-phi), sinPhi = sin(-phi);
 	// Person or Free
-	camera.position[_X] += dist * sin(phi);
-	camera.position[_Z] += dist * cos(phi);
+	camera.position[_X] -= dist * sinPhi;
+	camera.position[_Y] -= dist * cosPhi;
 }
 
