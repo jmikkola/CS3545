@@ -29,4 +29,6 @@ typedef enum { efalse, etrue } eboolean;
 #define WINDOW_WIDTH  1024
 #define WINDOW_HEIGHT 768
 
+extern int user_exit, free_move;
+
 #endif /* COMMON_H_ */

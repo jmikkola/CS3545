@@ -4,15 +4,27 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../sources/camera.c \
+../sources/common.c \
+../sources/input.c \
 ../sources/main.c \
+../sources/render.c \
 ../sources/system_files.c 
 
 OBJS += \
+./sources/camera.o \
+./sources/common.o \
+./sources/input.o \
 ./sources/main.o \
+./sources/render.o \
 ./sources/system_files.o 
 
 C_DEPS += \
+./sources/camera.d \
+./sources/common.d \
+./sources/input.d \
 ./sources/main.d \
+./sources/render.d \
 ./sources/system_files.d 
 
 
