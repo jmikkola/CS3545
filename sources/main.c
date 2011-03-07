@@ -39,7 +39,6 @@ int main (int argc, char* argv[]) {
 		return 1;
 	}
 
-	load_skybox_textures();
 	r_init ();
 
 	//Main loop

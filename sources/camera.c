@@ -9,6 +9,7 @@
 #include "mathlib/mathlib.h"
 #include "models/renderer_models.h"
 #include "camera.h"
+#include "math.h"
 
 float xRotMatrix[16],
 			 yRotMatrix[16],

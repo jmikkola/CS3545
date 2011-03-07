@@ -10,6 +10,7 @@ Notes:		Please remember that this is, for the moment, basically
 */
 
 #include <SDL/SDL_opengl.h>
+#include <stdio.h>
 
 #include "../common.h"
 #include "../mathlib/mathlib.h"
