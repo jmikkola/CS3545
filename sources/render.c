@@ -114,6 +114,10 @@ void r_drawFrame () {
 	glLoadIdentity();
 
 	timeStep();
+	if (getAcc() > 1000000) {
+		printf("%u FPS\n", getFrameCount());
+		subtractAcc(1000000);
+	}
 
 	// Draw skybox
 	glPushMatrix();
