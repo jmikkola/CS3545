@@ -12,6 +12,7 @@
 #include "camera.h"
 #include "render.h"
 #include "math.h"
+#include "timestep.h"
 
 #include <stdio.h>
 
@@ -47,6 +48,8 @@ void r_init () {
 	camera_init();
 	reset_position();
 	r_setupProjection();
+
+	initTime();
 }
 
 TextureInfo load_texture (char* filename) {
@@ -109,6 +112,8 @@ void r_drawFrame () {
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+
+	timeStep();
 
 	// Draw skybox
 	glPushMatrix();

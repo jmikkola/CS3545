@@ -9,7 +9,8 @@ C_SRCS += \
 ../sources/input.c \
 ../sources/main.c \
 ../sources/render.c \
-../sources/system_files.c 
+../sources/system_files.c \
+../sources/timestep.c 
 
 OBJS += \
 ./sources/camera.o \
@@ -17,7 +18,8 @@ OBJS += \
 ./sources/input.o \
 ./sources/main.o \
 ./sources/render.o \
-./sources/system_files.o 
+./sources/system_files.o \
+./sources/timestep.o 
 
 C_DEPS += \
 ./sources/camera.d \
@@ -25,7 +27,8 @@ C_DEPS += \
 ./sources/input.d \
 ./sources/main.d \
 ./sources/render.d \
-./sources/system_files.d 
+./sources/system_files.d \
+./sources/timestep.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

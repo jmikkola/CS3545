@@ -61,8 +61,8 @@ int main (int argc, char* argv[]) {
 		}
 		input_update ();
 		r_drawFrame ();
-		// Cap it at 100 fps
-		usleep (10000);
+		// Cap it at 1000 fps
+		usleep (1000);
 	}
 
 	SDL_Quit ();

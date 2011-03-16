@@ -11,6 +11,7 @@
 #include "common.h"
 #include "camera.h"
 #include "input.h"
+#include "timestep.h"
 
 // ==== Input ====
 
@@ -49,15 +50,16 @@ void input_mouseMove (int xPos, int yPos) {
  * 'f' Sets movement to free, 'p' sets movement to person
  */
 void input_update () {
+	float distance = 60.0f * getTimeStep();
 	// WASD movement
 	if(keys_down[SDLK_w])
-		camera_translateForward(-1);
+		camera_translateForward(-1 * distance);
 	if(keys_down[SDLK_s])
-		camera_translateForward(1);
+		camera_translateForward(distance);
 	if(keys_down[SDLK_a])
-		camera_translateStrafe(-1);
+		camera_translateStrafe(-1 * distance);
 	if(keys_down[SDLK_d])
-		camera_translateStrafe(1);
+		camera_translateStrafe(distance);
 
 	if(keys_down[SDLK_z])
 		camera.position[_X] += 1;

@@ -9,8 +9,8 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include subdir.mk
--include sources/tga_loader/subdir.mk
 -include sources/subdir.mk
+-include sources/tga_loader/subdir.mk
 -include sources/models/subdir.mk
 -include sources/mathlib/subdir.mk
 -include sources/materials/subdir.mk
