@@ -97,7 +97,7 @@ void r_rotateCamera() {
 void r_translateCamera() {
 	translateMatrix[12] = -camera.position[_X];
 	translateMatrix[13] = -camera.position[_Y];
-	translateMatrix[14] = -camera.position[_Z];
+	translateMatrix[14] = walkHeight-camera.position[_Z];
 
 	glMultMatrixf(translateMatrix);
 }
@@ -108,16 +108,20 @@ void r_translateCamera() {
  * Draws a frame
  */
 void r_drawFrame () {
+	static int frameCount = 0;
+	static int second = 1000000;
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
 	timeStep();
-	if (getAcc() > 1000000) {
-		printf("%u FPS\n", getFrameCount());
-		subtractAcc(1000000);
+	if (getAcc() > second) {
+		printf("%d FPS\n", frameCount);
+		frameCount = 0;
+		subtractAcc(second);
 	}
+	frameCount++;
 
 	// Draw skybox
 	glPushMatrix();

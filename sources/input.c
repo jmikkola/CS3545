@@ -7,11 +7,16 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_main.h>
 #include <SDL/SDL_opengl.h>
+#include <math.h>
+
 #include "mathlib/mathlib.h"
 #include "common.h"
 #include "camera.h"
 #include "input.h"
 #include "timestep.h"
+
+#define WALK_TIME_SCALE M_PI*2
+#define WALK_POSITION_SCALE 5.0
 
 // ==== Input ====
 
@@ -51,11 +56,19 @@ void input_mouseMove (int xPos, int yPos) {
  */
 void input_update () {
 	float distance = 60.0f * getTimeStep();
+	static float walkTheta = 0;
+	// walk motion
+	if (keys_down[SDLK_w] || keys_down[SDLK_s]) {
+		walkTheta -= getTimeStep();
+		walkHeight = WALK_POSITION_SCALE*sin(walkTheta * WALK_TIME_SCALE);
+	}
 	// WASD movement
-	if(keys_down[SDLK_w])
+	if(keys_down[SDLK_w]) {
 		camera_translateForward(-1 * distance);
-	if(keys_down[SDLK_s])
+	}
+	if(keys_down[SDLK_s]) {
 		camera_translateForward(distance);
+	}
 	if(keys_down[SDLK_a])
 		camera_translateStrafe(-1 * distance);
 	if(keys_down[SDLK_d])

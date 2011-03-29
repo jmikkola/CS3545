@@ -31,5 +31,6 @@ extern float xRotMatrix[16],
 			 zRotMatrix[16],
 			 translateMatrix[16];
 extern camera_t camera;
+extern float walkHeight;
 
 #endif /* CAMERA_H_ */

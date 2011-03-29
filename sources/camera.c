@@ -15,6 +15,7 @@ float xRotMatrix[16],
 			 yRotMatrix[16],
 			 zRotMatrix[16],
 			 translateMatrix[16];
+float walkHeight = 0;
 camera_t camera;
 
 void camera_init() {
@@ -29,6 +30,8 @@ void reset_position() {
 	VectorClear(camera.angleRad);
 	VectorClear(camera.position);
 	camera.position[_Y] = -200;
+	camera.position[_Z] = 5;
+	walkHeight = 0;
 }
 
 void camera_rotateX (float degree) {
@@ -71,4 +74,3 @@ void camera_translateStrafe(float dist) {
 	camera.position[_X] -= dist * sinPhi;
 	camera.position[_Y] -= dist * cosPhi;
 }
-
