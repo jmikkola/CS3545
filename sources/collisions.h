@@ -8,10 +8,6 @@
 #ifndef COLLISIONS_H_
 #define COLLISIONS_H_
 
-typedef struct {
-	vect3_t v1, v2, v3;
-} Triangle;
-
-int doesCollide(float boundingBox[3], Triangle *t);
+int doesCollide(float boundingBox[3], vect_t triangle[3][3]);
 
 #endif /* COLLISIONS_H_ */

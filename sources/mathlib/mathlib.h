@@ -17,6 +17,10 @@ typedef vect_t vect3_t[3];
 typedef vect_t vect4_t[4];
 typedef vect_t vect5_t[5];
 
+typedef struct {
+	vect_t a, b;
+} vect_pair;
+
 // Cross product
 #define VectorCross(v1, v2, out) {  \
     out[0]=v1[1]*v2[2]-v1[2]*v2[1]; \

@@ -5,23 +5,29 @@
  *      Author: jeremy
  */
 
+#include <math.h>
 #include "mathlib/mathlib.h"
 #include "collisions.h"
 
-int testCardinalAxies(float boundingBox[3], Triangle *t);
-int testTriangleNormal(float boundingBox[3], Triangle *t);
-int testTriangleEdges(float boundingBox[3], Triangle *t);
+int testCardinalAxies(float boundingBox[3], vect_t triangle[3][3]);
+int testTriangleNormal(float boundingBox[3], vect_t triangle[3][3]);
+int testTriangleEdges(float boundingBox[3], vect_t triangle[3][3]);
 
-int doesCollide(float boundingBox[3], Triangle *t) {
-	return testCardinalAxies(boundingBox, t)
-			&& testTriangleNormal(boundingBox, t)
-			&& testTriangleEdges(boundingBox, t);
+vect_pair crossWithTriangle(vect3_t normal, vect_t triangle[3][3]);
+vect_pair crossWithBox(vect3_t normal, float x, float y, float z);
+int testWithNormal(vect3_t normal, float boundingBox[3], vect_t triangle[3][3]);
+int testBounds(vect_pair triangle, vect_pair box);
+
+int doesCollide(float boundingBox[3], vect_t triangle[3][3]) {
+	return testCardinalAxies(boundingBox, triangle)
+			&& testTriangleNormal(boundingBox, triangle)
+			&& testTriangleEdges(boundingBox, triangle);
 }
 
-int testCardinalAxies(float boundingBox[3], Triangle *t) {
-	float *v1 = t->v1,
-		  *v2 = t->v2,
-		  *v3 = t->v3;
+int testCardinalAxies(float boundingBox[3], vect_t triangle[3][3]) {
+	float *v1 = triangle[0],
+		  *v2 = triangle[1],
+		  *v3 = triangle[2];
 	int i;
 	float distance;
 
@@ -45,67 +51,117 @@ int testCardinalAxies(float boundingBox[3], Triangle *t) {
 	return 1;
 }
 
-int testTriangleNormal(float boundingBox[3], Triangle *t) {
-	float *v1 = t->v1,
-		  *v2 = t->v2,
-		  *v3 = t->v3;
-	vect3_t triangleNormal,
-			side1,
-			side2,
-			boxVector;
-	int direction,
-		prevDirection,
-		i;
-	float distance,
-		  x = boundingBox[0],
-		  y = boundingBox[1],
-		  z = boundingBox[2];
+int testTriangleNormal(float boundingBox[3], vect_t triangle[3][3]) {
+	float *v1 = triangle[0],
+		  *v2 = triangle[1],
+		  *v3 = triangle[2];
+	vect3_t triangleNormal, side1, side2;
 
 	// Create triangle normal
 	VectorSubtract(v2, v1, side1);
 	VectorSubtract(v3, v1, side2);
 	VectorCross(side1, side2, triangleNormal);
+	VectorNormalize(triangleNormal);
 
+	return testWithNormal(triangleNormal, boundingBox, triangle);
+}
+
+int testWithNormal(vect3_t normal, float boundingBox[3], vect_t triangle[3][3]) {
+	vect_pair triangleBounds, boxBounds;
+
+	// Check the points on the triangle
+	triangleBounds = crossWithTriangle(normal, triangle);
+	// Check the points on the box
+	boxBounds = crossWithBox(normal,
+							 boundingBox[0],
+							 boundingBox[1],
+							 boundingBox[2]);
+	// Check to see if the intervals are non-overlapping
+	// (testBounds will return 1 if they overlap)
+	return testBounds(triangleBounds, boxBounds);
+}
+
+int testBounds(vect_pair triangle, vect_pair box) {
+	// __.b stores the maximum value,
+	// __.a stores the minimum.
+	return (triangle.b < box.a) || (triangle.a > box.b);
+}
+
+vect_pair crossWithBox(vect3_t normal, float x, float y, float z) {
+	float boxMin = 0, boxMax = 0, distance;
+	vect3_t boxPoint;
+	vect_pair out;
+	int i;
+
+	// Loop through points on the box
 	for (i = 0; i < 8; i++) {
-		// Generate the vector to each point on the box
-		// (1 - 2*(i&1)) is either -1 or 1, depending on a bit in i
-		boxVector[0] = x*(1 - 2*(i&1)) // Point on box
-					   - v1[0];        // Point on triangle
-		boxVector[1] = y*(1 - 2*(i&2))
-				       - v1[1];
-		boxVector[2] = z*(1 - 2*(i&4))
-				       - v1[2];
+		// Get a point on the box
+		// [Explanation: (1 - 2*(bit)) will be -1 or 1, depending on the bit]
+		boxPoint[0] = x*(1 - 2*(i&1));
+		boxPoint[1] = y*(1 - 2*(i&2 >> 1));
+		boxPoint[2] = z*(1 - 2*(i&4 >> 2));
 
-		// Project along the triangle normal
-		VectorDot(triangleNormal, boxVector, distance);
+		// Project along the normal
+		VectorDot(boxPoint, normal, distance);
 
-		// figure out which side of the triangle that part of the box is on
-		direction = (distance > 0);
-
-		// Test whether that direction is different from the previous directions
-		if ((i != 0)  							// Don't test the first instance
-			&& (direction != prevDirection)) {  // Ensure that the direction is the same
-			// It wasn't, so there might be a collision
-			return 1;
+		// Compare with current min / max distance
+		// and update if needed
+		if (i == 0) {
+			boxMin = distance;
+			boxMax = distance;
 		} else {
-			// It was on the same side, keep checking
-			prevDirection = direction;
+			if (distance < boxMin)
+				boxMin = distance;
+			if (distance > boxMax)
+				boxMax = distance;
 		}
 	}
 
-	// There is no collision
-	return 0;
+	out.a = boxMin;
+	out.b = boxMax;
+
+	return out;
 }
 
-int testTriangleEdges(float boundingBox[3], Triangle *t) {
-	int edgeNum, axisNum;
-	vect3_t edgeNormal,
-			side1,
-			side2;
+vect_pair crossWithTriangle(vect3_t normal, vect_t triangle[3][3]) {
+	float triMin = 0, triMax = 0, distance;
+	vect_pair out;
+	int i;
+	for (i = 0; i < 3; i++) {
+		vect_t *point = triangle[i];
+		VectorDot(point, normal, distance);
 
-	for (edgeNum = 0; edgeNum < 3; edgeNum++) {
-		for (axisNum = 0; axisNum < 3; axisNum++) {
+		if (i == 0) {
+			triMin = distance;
+			triMax = distance;
+		} else {
+			if (distance < triMin)
+				triMin = distance;
+			if (distance > triMax)
+				triMax = distance;
+		}
+	}
+	out.a = triMin;
+	out.b = triMax;
+	return out;
+}
 
+int testTriangleEdges(float boundingBox[3], vect_t triangle[3][3]) {
+	vect3_t normal;
+	vect_t *axis, *side;
+	vect_t axies[3][3] =
+	        {{1,0,0},
+			 {0,1,0},
+			 {0,0,1}};
+	int i, j;
+
+	for (i = 0; i < 3; i++) {
+		axis = axies[i];
+		for (j = 0; j < 3; j++) {
+			side = triangle[i];
+			VectorCross(axis, side, normal);
+			if (testWithNormal(normal, boundingBox, triangle))
+				return 1;
 		}
 	}
 
