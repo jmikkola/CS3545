@@ -9,12 +9,9 @@
 #define COLLISIONS_H_
 
 typedef struct {
-	float x, y, z;
-} AABB;
-
-typedef struct {
 	vect3_t v1, v2, v3;
 } Triangle;
 
+int doesCollide(float boundingBox[3], Triangle *t);
 
 #endif /* COLLISIONS_H_ */

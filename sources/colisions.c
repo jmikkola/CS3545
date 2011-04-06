@@ -12,10 +12,7 @@ int testCardinalAxies(float boundingBox[3], Triangle *t);
 int testTriangleNormal(float boundingBox[3], Triangle *t);
 int testTriangleEdges(float boundingBox[3], Triangle *t);
 
-int doesCollide(AABB* box, Triangle *t) {
-	float x = box->x, y = box->y, z = box->z;
-	float boundingBox[3] = {x, y, z};
-
+int doesCollide(float boundingBox[3], Triangle *t) {
 	return testCardinalAxies(boundingBox, t)
 			&& testTriangleNormal(boundingBox, t)
 			&& testTriangleEdges(boundingBox, t);
