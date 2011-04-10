@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "mathlib/mathlib.h"
 #include "camera.h"
 #include "collisions.h"
@@ -16,6 +17,9 @@
 static vect_t **triangleList = NULL;
 static vect_t **listPtr = NULL;
 static int numTriangles = 0;
+
+static void transform(float *point, vect4_t q);
+static void buildTransform(vect4_t q);
 
 void world_allocCollisionTris(int number) {
 	numTriangles += number;
@@ -36,20 +40,53 @@ void world_addCollisionTri(Triangle t) {
 
 int world_testCollision(float boundingBox[3]) {
 	float triangle[3][3] = {{0,0,0},{0,0,0},{0,0,0}};
-	int i, k;
+	int i, j, k;
 	vect_t **triPtr = triangleList, *tri;
+	vect4_t q;
+	// Create camera-rotation quaternion
+	buildTransform(q);
 	for (i = 0; i < numTriangles; i++, triPtr++) {
 		// Copy triangle into correct format
+		// and translate by camera position
 		tri = *triPtr;
+		for (j = 0; j < 3; j++)
+			for (k = 0; k < 3; k++)
+				triangle[j][k] = tri[k + 3*j] - camera.position[k];
+		// Apply camera rotation to each vertex
 		for (k = 0; k < 3; k++)
-			triangle[0][k] = tri[k];
-		for (k = 0; k < 3; k++)
-			triangle[1][k] = tri[k+3];
-		for (k = 0; k < 3; k++)
-			triangle[2][k] = tri[k+6];
+			transform(triangle[k], q);
 		// Test for collision
 		if (doesCollide(boundingBox, triangle))
 			return 1;
 	}
 	return 0;
+}
+
+static void transform(float *point, vect4_t q){
+	vect4_t qin, qout;
+	VectorCopy(point, qin);
+	QuaternionMultiply(qin, q, qout);
+	VectorCopy(qout, point);
+}
+
+static void buildTransform(vect4_t q) {
+	vect4_t q1, q2, q3;
+	// Apply X rotation
+	q1[0] = sin(0.5f * camera.angleRad[0]);
+	q1[1] = 0;
+	q1[2] = 0;
+	q1[3] = cos(0.5f * camera.angleRad[0]);
+	// Apply Y rotation
+	q2[0] = 0;
+	q2[1] = sin(0.5f * camera.angleRad[1]);
+	q2[2] = 0;
+	q2[3] = cos(0.5f * camera.angleRad[1]);
+	QuaternionMultiply(q1, q2, q3);
+	// Apply Z rotation
+	q2[0] = 0;
+	q2[1] = 0;
+	q2[2] = sin(0.5f * camera.angleRad[2]);
+	q2[3] = cos(0.5f * camera.angleRad[2]);
+	QuaternionMultiply(q3, q2, q);
+
 }

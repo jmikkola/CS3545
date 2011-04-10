@@ -66,6 +66,13 @@ typedef struct {
 // Print a vector
 #define prvect(v) {printf("%.2f %.2f %.3f\n", v[0], v[1], v[2]);}
 //
+// Multiply quaternions using the Grassman product
+#define QuaternionMultiply(p, q, out) \
+		{ out[0] = q[0]*p[3] + q[0]*p[3] + p[1]*q[2] - p[2]*q[1]; \
+	      out[1] = p[1]*q[3] + q[1]*p[3] + p[2]*q[0] - p[0]*q[2]; \
+		  out[2] = p[2]*q[3] + q[2]*p[3] + p[0]*q[1] - p[1]*q[0]; \
+		  out[3] = p[3]*q[3] - p[0]*q[0] - p[1]*q[1] - p[2]*q[2];}
+//
 // Set a matrix to the identity
 void glmatrix_identity (float *m);
 //
