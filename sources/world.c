@@ -72,21 +72,21 @@ static void transform(float *point, vect4_t q){
 static void buildTransform(vect4_t q) {
 	vect4_t q1, q2, q3;
 	// Apply X rotation
-	q1[0] = sin(0.5f * camera.angleRad[0]);
+	q1[0] = sin(0.5f * camera.angleRad[_X]);
 	q1[1] = 0;
 	q1[2] = 0;
-	q1[3] = cos(0.5f * camera.angleRad[0]);
+	q1[3] = cos(0.5f * camera.angleRad[_X]);
 	// Apply Y rotation
 	q2[0] = 0;
-	q2[1] = sin(0.5f * camera.angleRad[1]);
+	q2[1] = sin(0.5f * camera.angleRad[_Y]);
 	q2[2] = 0;
-	q2[3] = cos(0.5f * camera.angleRad[1]);
+	q2[3] = cos(0.5f * camera.angleRad[_Y]);
 	QuaternionMultiply(q1, q2, q3);
 	// Apply Z rotation
 	q2[0] = 0;
 	q2[1] = 0;
-	q2[2] = sin(0.5f * camera.angleRad[2]);
-	q2[3] = cos(0.5f * camera.angleRad[2]);
+	q2[2] = sin(0.5f * camera.angleRad[_Z]);
+	q2[3] = cos(0.5f * camera.angleRad[_Z]);
 	QuaternionMultiply(q3, q2, q);
 
 }

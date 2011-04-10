@@ -14,6 +14,7 @@
 #include "camera.h"
 #include "input.h"
 #include "timestep.h"
+#include "world.h"
 
 #define WALK_TIME_SCALE M_PI*2
 #define WALK_POSITION_SCALE 5.0
@@ -57,6 +58,8 @@ void input_mouseMove (int xPos, int yPos) {
 void input_update () {
 	float distance = 60.0f * getTimeStep();
 	static float walkTheta = 0;
+	vect3_t old_position, boundingBox = {2,2,2};
+	VectorCopy(camera.position, old_position);
 	// walk motion
 	if (keys_down[SDLK_w] || keys_down[SDLK_s]) {
 		walkTheta -= getTimeStep();
@@ -86,6 +89,9 @@ void input_update () {
 		camera.position[_Z] += 1;
 	if(keys_down[SDLK_n])
 		camera.position[_Z] -= 1;
+
+	if (world_testCollision(boundingBox))
+		VectorCopy(old_position, camera.position);
 
 	// r for reset
 	if(keys_down[SDLK_r]){
