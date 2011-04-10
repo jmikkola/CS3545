@@ -166,11 +166,11 @@ void renderer_model_loadASE(char *name, eboolean collidable)
  */
 static void loadASE_parseTokens(char **tokens, int numTokens, eboolean collidable)
 {
-	int i, j, curMatID, curObj, curFNormal, curVNormal;
+	int i, j, k, curMatID, curObj, curFNormal, curVNormal;
 	ase_model_t	*model;
 	ase_mesh_vertex_t *vertexList;
 	ase_mesh_face_t *faceList;
-	vect3_t tri[3];
+	Triangle tri;
 
 	model = &(modelStack[modelPtr]);
 
@@ -432,9 +432,15 @@ static void loadASE_parseTokens(char **tokens, int numTokens, eboolean collidabl
 			ase_mesh_face_t *faceList = model->objects[i].mesh.faceList;
 
 			for(j = 0; j < numFaces; j++) {
-				VectorCopy(vertexList[faceList[j].A].coords, tri[0]);
-				VectorCopy(vertexList[faceList[j].B].coords, tri[1]);
-				VectorCopy(vertexList[faceList[j].C].coords, tri[2]);
+				int n = faceList[j].A;
+				for (k = 0; k < 3; k++)
+					tri[k] = vertexList[n].coords[k];
+				n = faceList[j].B;
+				for (k = 0; k < 3; k++)
+					tri[k+3] = vertexList[n].coords[k];
+				n = faceList[j].C;
+				for (k = 0; k < 3; k++)
+					tri[k+6] = vertexList[n].coords[k];
 
 				world_addCollisionTri(tri);
 			}

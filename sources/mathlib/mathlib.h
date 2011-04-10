@@ -17,6 +17,8 @@ typedef vect_t vect3_t[3];
 typedef vect_t vect4_t[4];
 typedef vect_t vect5_t[5];
 
+typedef vect_t Triangle[9];
+
 typedef struct {
 	vect_t a, b;
 } vect_pair;
