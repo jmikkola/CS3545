@@ -16,6 +16,7 @@ Notes:		Please remember that this is, for the moment, basically
 #include "../mathlib/mathlib.h"
 #include "../materials/renderer_materials.h"
 #include "../models/renderer_models.h"
+#include "../world.h"
 
 #define MAX_NAMELENGTH 256
 #define MAX_FILEPATH 256
@@ -23,14 +24,14 @@ Notes:		Please remember that this is, for the moment, basically
 static void loadASE_parseTokens(char **tokens, int numTokens, eboolean collidable);
 static void loadASE_generateList(int index);
 
+
 /*
 ===========================================================================
 Data Structures
 ===========================================================================
 */
 
-typedef struct
-{
+typedef struct {
 	char	name[MAX_NAMELENGTH], class[MAX_NAMELENGTH];
 	int		subNo;
 	float	amount;
@@ -40,11 +41,9 @@ typedef struct
 			uvw_angle, uvw_blur, uvw_blurOffset, uvw_noiseAmt,
 			uvw_noiseSize, uvw_noiseLevel, uvw_noisePhase;
 	char	bitmapFilter[MAX_NAMELENGTH];
-}
-ase_mapDiffuse_t;
+} ase_mapDiffuse_t;
 
-typedef struct
-{
+typedef struct {
 	int		id, globalID;
 	char	name[MAX_NAMELENGTH], class[MAX_NAMELENGTH];
 	vect3_t	ambient, diffuse, specular;
@@ -54,39 +53,30 @@ typedef struct
 	char	falloff[MAX_NAMELENGTH], xpType[MAX_NAMELENGTH];
 
 	ase_mapDiffuse_t diffuseMap;
-}
-ase_material_t;
+} ase_material_t;
 
-typedef struct
-{
+typedef struct {
 	int				materialCount;
 	ase_material_t	*list;
-}
-ase_materialList_t;
+} ase_materialList_t;
 
-typedef struct
-{
+typedef struct {
 	int 	faceID;
 	int 	A, B, C, AB, BC, CA;
 	int 	smoothingGroup, materialID;
 	vect3_t	normal;
-}
-ase_mesh_face_t;
+} ase_mesh_face_t;
 
-typedef struct
-{
+typedef struct {
 	int	tfaceID;
 	int a, b, c;
-}
-ase_mesh_tface_t;
+} ase_mesh_tface_t;
 
-typedef struct
-{
+typedef struct {
 	int 	vertexID;
 	vect3_t	coords;
 	vect3_t	normal;
-}
-ase_mesh_vertex_t;
+} ase_mesh_vertex_t;
 
 typedef struct
 {
@@ -95,8 +85,7 @@ typedef struct
 }
 ase_mesh_tvertex_t;
 
-typedef struct
-{
+typedef struct {
 	int 	numVertex, numFaces;
 	int 	numTVertex, numTVFaces;
 
@@ -104,25 +93,20 @@ typedef struct
 	ase_mesh_tvertex_t	*tvertList;
 	ase_mesh_face_t		*faceList;
 	ase_mesh_tface_t	*tfaceList;
-}
-ase_mesh_t;
+} ase_mesh_t;
 
-typedef struct
-{
+typedef struct {
 	char 		name[MAX_NAMELENGTH];
 	ase_mesh_t 	mesh;
 	int			materialRef;
-}
-ase_geomObject_t;
+} ase_geomObject_t;
 
-typedef struct
-{
+typedef struct {
 	int 				numObjects;
 	int					glListID;
 	ase_geomObject_t	*objects;
 	ase_materialList_t	materials;
-}
-ase_model_t;
+} ase_model_t;
 
 //Debugging
 static void loadASE_printDiffuse(ase_mapDiffuse_t *diffuse);
@@ -439,19 +423,15 @@ static void loadASE_parseTokens(char **tokens, int numTokens, eboolean collidabl
 	for(i = 0; i < model->numObjects; i++)
 		model->objects[i].materialRef = model->materials.list[model->objects[i].materialRef].globalID;
 
-	/*
 	//Potentially add triangles to collision list
-	if(collidable)
-	{
-		for(i = 0; i < model->numObjects; i++)
-		{
-			world_allocCollisionTris(model->objects[i].mesh.numFaces);ase_model_t
+	if (collidable) {
+		for(i = 0; i < model->numObjects; i++) {
+			int numFaces = model->objects[i].mesh.numFaces;
+			world_allocCollisionTris(numFaces);
+			ase_mesh_vertex_t *vertexList = model->objects[i].mesh.vertexList;
+			ase_mesh_face_t *faceList = model->objects[i].mesh.faceList;
 
-			vertexList  = model->objects[i].mesh.vertexList;
-			faceList    = model->objects[i].mesh.faceList;
-
-			for(j = 0; j < model->objects[i].mesh.numFaces; j++)
-			{
+			for(j = 0; j < numFaces; j++) {
 				VectorCopy(vertexList[faceList[j].A].coords, tri[0]);
 				VectorCopy(vertexList[faceList[j].B].coords, tri[1]);
 				VectorCopy(vertexList[faceList[j].C].coords, tri[2]);
@@ -460,7 +440,6 @@ static void loadASE_parseTokens(char **tokens, int numTokens, eboolean collidabl
 			}
 		}
 	}
-	*/
 
 	//Generate a display list for drawing
 	model->glListID = glGenLists(1);

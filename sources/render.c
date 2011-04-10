@@ -39,7 +39,7 @@ void r_init () {
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Load model
-	renderer_model_loadASE("models/submarine.ASE", efalse);
+	renderer_model_loadASE("models/submarine.ASE", etrue);
 
 	// Load textures
 	skybox = load_texture("images/skybox003.tga");
