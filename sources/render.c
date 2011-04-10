@@ -4,6 +4,7 @@
  *  Created on: Mar 3, 2011
  *      Author: jeremy
  */
+#include <math.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_opengl.h>
 #include "common.h"
@@ -11,7 +12,6 @@
 #include "models/renderer_models.h"
 #include "camera.h"
 #include "render.h"
-#include "math.h"
 #include "timestep.h"
 
 #include <stdio.h>
