@@ -33,15 +33,26 @@ int testWithNormal         (vect3_t normal,
 int testBounds             (vect_pair triangle, 
                             vect_pair box);
 
+int testUsed = 0;
+
+int getTestUsed() {
+    return testUsed;
+}
+
 // doesCollide
 //
 int doesCollide(float boundingBox[3], vect_t triangle[3][3]) {
-    if (testCardinalAxies(boundingBox, triangle))
+    if (testCardinalAxies(boundingBox, triangle)) {
+        testUsed = 1;
         return 0;
-    if (testTriangleNormal(boundingBox, triangle))
+    } if (testTriangleNormal(boundingBox, triangle)) {
+        testUsed = 2;
         return 0;
-    if (testTriangleEdges(boundingBox, triangle))
+    } if (testTriangleEdges(boundingBox, triangle)) {
+        testUsed = 3;
         return 0;
+    }
+    testUsed = 4;
     return 1;
 }
 
@@ -204,25 +215,22 @@ vect_pair crossWithTriangle(vect3_t normal, vect_t triangle[3][3]) {
 // Returns 1 if such a plane exists, 
 //         0 if one does not. 
 int testTriangleEdges(float boundingBox[3], vect_t triangle[3][3]) {
-	vect3_t normal, side1, side2, triangleNormal;
+	vect3_t normal, triangleNormal, sides[3];
 	vect_t *axis, *side;
 	vect_t axies[3][3] =
-	        {{1,0,0},
-			 {0,1,0},
-			 {0,0,1}};
+	        {{1,0,0}, {0,1,0}, {0,0,1}};
 	int i, j;
 
-	// Create triangle normal
-	VectorSubtract(triangle[1], triangle[0], side1);
-	VectorSubtract(triangle[2], triangle[0], side2);
-	VectorCross(side1, side2, triangleNormal);
+	// Create side vectors
+	VectorSubtract(triangle[1], triangle[0], sides[0]);
+	VectorSubtract(triangle[2], triangle[1], sides[1]);
+	VectorSubtract(triangle[0], triangle[2], sides[2]);
 
     for (i = 0; i < 3; i++) {
-        side = triangle[i];
-        VectorCross(side, triangleNormal, normal);
+        side = sides[i];
         for (j = 0; j < 3; j++) {
             axis = axies[i];
-            VectorCross(axis, normal, normal);
+            VectorCross(axis, side, normal);
             VectorNormalize(normal);
             if (testWithNormal(normal, boundingBox, triangle))
                 return 1;

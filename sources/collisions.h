@@ -10,4 +10,6 @@
 
 int doesCollide(float boundingBox[3], vect_t triangle[3][3]);
 
+int getTestUsed(void);
+
 #endif /* COLLISIONS_H_ */
