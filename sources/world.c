@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <string.h>
 #include "mathlib/mathlib.h"
 #include "camera.h"
 #include "collisions.h"
@@ -49,20 +48,23 @@ void testTriangle(float *triangle) {
 }
 
 void world_allocCollisionTris(int number) {
-	numTriangles += number;
-	triangleList = (vect_t **) realloc(triangleList, numTriangles * sizeof(vect_t **));
+	triangleList = (vect_t **) realloc(triangleList, (numTriangles+number) * sizeof(vect_t **));
 	if (triangleList == NULL) {
 		fprintf(stderr, "Fatal error: could not allocate memory "
 				"for collision detection triangles in world.c\n");
 	}
 }
 
-void world_addCollisionTri(Triangle t) {
-	if (listPtr == NULL)
-		listPtr = triangleList;
-	else
-		listPtr++;
-	*listPtr = t;
+void world_addCollisionTri(vect_t *t) {
+	int i;
+	vect_t *triangle = malloc(sizeof(vect_t) * 9);
+//	vect_t *triangle = NULL;
+	if (triangle != NULL) {
+		for (i = 0; i < 9; i++)
+			triangle[i] = t[i];
+		triangleList[numTriangles] = triangle;
+		numTriangles++;
+	}
 }
 
 int world_testCollision(float boundingBox[3]) {
@@ -84,8 +86,6 @@ int world_testCollision(float boundingBox[3]) {
 			transform(triangle[k], q);
 		// Test for collision
 		if (doesCollide(boundingBox, triangle)) {
-			printf("collided with ");
-			printTriangle(triangle);
 			return 1;
 		}
 	}
