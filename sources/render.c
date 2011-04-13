@@ -120,6 +120,11 @@ void r_drawFrame () {
 		printf("%d FPS\n", frameCount);
 		frameCount = 0;
 		subtractAcc(second);
+
+		int* useCount = getUseCounts();
+		printf("# test uses: test 1 - %d, test 2 - %d, test 3 - %d, test 4 - %d\n",
+				useCount[0], useCount[1], useCount[2], useCount[3]);
+		resetUseCount();
 	}
 	frameCount++;
 

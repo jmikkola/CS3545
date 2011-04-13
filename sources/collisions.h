@@ -12,4 +12,7 @@ int doesCollide(float boundingBox[3], vect_t triangle[3][3]);
 
 int getTestUsed(void);
 
+int* getUseCounts();
+void resetUseCount();
+
 #endif /* COLLISIONS_H_ */

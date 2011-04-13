@@ -33,27 +33,39 @@ int testWithNormal         (vect3_t normal,
 int testBounds             (vect_pair triangle, 
                             vect_pair box);
 
-int testUsed = 0;
+static int testUsed = 0;
+static int useCount[4] = {0,0,0,0};
 
 int getTestUsed() {
     return testUsed;
 }
 
+int* getUseCounts() {
+	return &useCount[0];
+}
+
+void resetUseCount() {
+	int i;
+	for (i = 0; i < 4; i++)
+		useCount[i] = 0;
+}
+
 // doesCollide
 //
 int doesCollide(float boundingBox[3], vect_t triangle[3][3]) {
+	int out = 0;
     if (testCardinalAxies(boundingBox, triangle)) {
         testUsed = 1;
-        return 0;
-    } if (testTriangleNormal(boundingBox, triangle)) {
+    } else if (testTriangleNormal(boundingBox, triangle)) {
         testUsed = 2;
-        return 0;
-    } if (testTriangleEdges(boundingBox, triangle)) {
+    } else if (testTriangleEdges(boundingBox, triangle)) {
         testUsed = 3;
-        return 0;
+    } else {
+    	testUsed = 4;
+    	out = 1;
     }
-    testUsed = 4;
-    return 1;
+    useCount[testUsed-1]++;
+    return out;
 }
 
 // testCardinalAxies
