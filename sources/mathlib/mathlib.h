@@ -82,5 +82,11 @@ void math_triangleNormal(vect_t *t, vect3_t normal);
 // Finds the absolute value of val
 float math_absF(float val);
 //
+// Multiplies quaternoins?
+void multiplyQuaternoins(vect4_t q1, vect4_t q2, vect4_t out);
+//
+// Multiply two 4x4 matrices in column-major order
+void multiplyMats16f(float *mat1, float *mat2, float *out);
+//
 // End header guard
 #endif

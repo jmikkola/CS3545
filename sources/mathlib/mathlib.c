@@ -32,3 +32,24 @@ float math_absF(float val) {
 		return -val;
 	return val;
 }
+
+void multiplyQuaternoins(vect4_t q1, vect4_t q2, vect4_t out) {
+	out[0] = q1[0]*q2[0] - q1[1]*q2[1] - q1[2]*q2[2] - q1[3]*q2[3];
+	out[1] = q1[0]*q2[1] + q1[1]*q2[0] + q1[2]*q2[3] - q1[3]*q2[2];
+	out[2] = q1[0]*q2[2] - q1[1]*q2[3] + q1[2]*q2[0] + q1[3]*q2[1];
+	out[3] = q1[0]*q2[3] + q1[1]*q2[2] - q1[2]*q2[1] + q1[3]*q2[0];
+}
+
+// Matrices are in column-major order
+void multiplyMats16f(float *mat1, float *mat2, float *out) {
+	int i, j, k, temp;
+	for (i = 0; i < 4; i++) { // column
+		for (j = 0; j < 4; j++) { // row
+			temp = 0;
+			for (k = 0; k < 4; k++) { // index
+				temp += mat1[i*4 + k] * mat[k*4 + j];
+			}
+			out[i*4 + j] = temp;
+		}
+	}
+}

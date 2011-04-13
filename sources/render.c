@@ -121,10 +121,10 @@ void r_drawFrame () {
 		frameCount = 0;
 		subtractAcc(second);
 
-		int* useCount = getUseCounts();
-		printf("# test uses: test 1 - %d, test 2 - %d, test 3 - %d, test 4 - %d\n",
-				useCount[0], useCount[1], useCount[2], useCount[3]);
-		resetUseCount();
+//		int* useCount = getUseCounts();
+//		printf("# test uses: test 1 - %d, test 2 - %d, test 3 - %d, test 4 - %d\n",
+//				useCount[0], useCount[1], useCount[2], useCount[3]);
+//		resetUseCount();
 	}
 	frameCount++;
 
@@ -164,6 +164,8 @@ void draw_skybox() {
     y2 = 2/4.0f;
     textureID = skybox.num;
     glBindTexture(GL_TEXTURE_2D, textureID);
+    static void rotatePoint(float *point, float *matrix);
+    static void buildTransform(vect4_t q);
     glBegin(GL_QUADS);
 		glTexCoord2f(x1, y1); glVertex3f(  1.0f, -1.0f, -1.0f );
 		glTexCoord2f(x2, y1); glVertex3f(  1.0f,  1.0f, -1.0f );

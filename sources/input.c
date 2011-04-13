@@ -58,7 +58,7 @@ void input_mouseMove (int xPos, int yPos) {
 void input_update () {
 	float distance = 60.0f * getTimeStep();
 	static float walkTheta = 0;
-	vect3_t old_position, boundingBox = {1,1,1}, pushback, velocity;
+	vect3_t old_position, boundingBox = {4, 4, 4}, pushback, velocity;
 	VectorCopy(camera.position, old_position);
 
 	// Reset velocity
@@ -67,10 +67,11 @@ void input_update () {
 	velocity[2] = 0;
 
 	// walk motion
-	if (keys_down[SDLK_w] || keys_down[SDLK_s]) {
-		walkTheta -= getTimeStep();
-		walkHeight = WALK_POSITION_SCALE*sin(walkTheta * WALK_TIME_SCALE);
-	}
+//	if (keys_down[SDLK_w] || keys_down[SDLK_s]) {
+//		walkTheta -= getTimeStep();
+//		walkHeight = WALK_POSITION_SCALE*sin(walkTheta * WALK_TIME_SCALE);
+//	}
+
 	// WASD movement
 	if(keys_down[SDLK_w]) {
 		velocity[0] -= distance;
