@@ -76,5 +76,11 @@ typedef struct {
 // Set a matrix to the identity
 void glmatrix_identity (float *m);
 //
+// Find the normal of a triangle
+void math_triangleNormal(vect_t *t, vect3_t normal);
+//
+// Finds the absolute value of val
+float math_absF(float val);
+//
 // End header guard
 #endif

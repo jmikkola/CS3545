@@ -17,7 +17,7 @@
 #include "world.h"
 
 #define WALK_TIME_SCALE M_PI*2
-#define WALK_POSITION_SCALE 5.0
+#define WALK_POSITION_SCALE 0.5
 
 // ==== Input ====
 
@@ -58,8 +58,14 @@ void input_mouseMove (int xPos, int yPos) {
 void input_update () {
 	float distance = 60.0f * getTimeStep();
 	static float walkTheta = 0;
-	vect3_t old_position, boundingBox = {1,1,1};
+	vect3_t old_position, boundingBox = {1,1,1}, pushback, velocity;
 	VectorCopy(camera.position, old_position);
+
+	// Reset velocity
+	velocity[0] = 0;
+	velocity[1] = 0;
+	velocity[2] = 0;
+
 	// walk motion
 	if (keys_down[SDLK_w] || keys_down[SDLK_s]) {
 		walkTheta -= getTimeStep();
@@ -67,18 +73,26 @@ void input_update () {
 	}
 	// WASD movement
 	if(keys_down[SDLK_w]) {
-		camera_translateForward(-1 * distance);
+		velocity[0] -= distance;
 	}
 	if(keys_down[SDLK_s]) {
-		camera_translateForward(distance);
+		velocity[0] += distance;
 	}
-	if(keys_down[SDLK_a])
-		camera_translateStrafe(-1 * distance);
-	if(keys_down[SDLK_d])
-		camera_translateStrafe(distance);
+	if(keys_down[SDLK_a]) {
+		velocity[1] -= distance;
+	}
+	if(keys_down[SDLK_d]) {
+		velocity[1] += distance;
+	}
 
-	if (world_testCollision(boundingBox))
-		VectorCopy(old_position, camera.position);
+	world_getPushBack(boundingBox, velocity, pushback);
+	velocity[0] += pushback[0];
+	velocity[1] += pushback[1];
+	velocity[2] += pushback[2];
+
+	camera_translateForward(velocity[0]);
+	camera_translateStrafe(velocity[1]);
+	camera.position[_Z] += velocity[2]; // Is this right?
 
 	if(keys_down[SDLK_z])
 		camera.position[_X] += 1;

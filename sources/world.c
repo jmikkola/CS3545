@@ -15,7 +15,6 @@
 
 
 static vect_t **triangleList = NULL;
-static vect_t **listPtr = NULL;
 static int numTriangles = 0;
 
 static void transform(float *point, vect4_t q);
@@ -90,6 +89,52 @@ int world_testCollision(float boundingBox[3]) {
 		}
 	}
 	return 0;
+}
+
+void world_getPushBack(float boundingBox[3], vect3_t velocity, vect3_t pushback) {
+	float triangle[3][3] = {{0,0,0},{0,0,0},{0,0,0}},
+		  force;
+	int i, j, k;
+	vect_t **triPtr = triangleList, *tri;
+	vect3_t triangleNormal;
+	vect4_t q;
+
+	// Reset the pushback value
+	pushback[0] = 0;
+	pushback[1] = 0;
+	pushback[2] = 0;
+
+	// Create camera-rotation quaternion
+	buildTransform(q);
+
+	for (i = 0; i < numTriangles; i++, triPtr++) {
+		// Copy triangle into correct format
+		// and translate by camera position
+		tri = *triPtr;
+		for (j = 0; j < 3; j++)
+			for (k = 0; k < 3; k++)
+				triangle[j][k] = tri[k + 3*j] - camera.position[k];
+
+		// Apply camera rotation to each vertex
+		for (k = 0; k < 3; k++)
+			transform(triangle[k], q);
+
+		// If if collides, get pushback vector
+		if (doesCollide(boundingBox, triangle)) {
+			math_triangleNormal(&triangle[0][0], triangleNormal);
+			VectorDot(triangleNormal, velocity, force);
+
+			// Scale the triangleNormal by the force
+			// to get the amount pushed back
+			VectorScale(triangleNormal, -force);
+
+			// Set the maximum pushback amount
+			for (j = 0; j < 3; j++) {
+				if (math_absF(pushback[j]) < math_absF(triangleNormal[j]))
+					pushback[j] = triangleNormal[j];
+			}
+		}
+	}
 }
 
 static void transform(float *point, vect4_t q){
