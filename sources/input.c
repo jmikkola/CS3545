@@ -58,7 +58,7 @@ void input_mouseMove (int xPos, int yPos) {
 void input_update () {
 	float distance = 60.0f * getTimeStep();
 	static float walkTheta = 0;
-	vect3_t old_position, boundingBox = {2,2,2};
+	vect3_t old_position, boundingBox = {0.1,0.1,0.1};
 	VectorCopy(camera.position, old_position);
 	// walk motion
 	if (keys_down[SDLK_w] || keys_down[SDLK_s]) {
@@ -77,6 +77,9 @@ void input_update () {
 	if(keys_down[SDLK_d])
 		camera_translateStrafe(distance);
 
+	if (world_testCollision(boundingBox))
+		VectorCopy(old_position, camera.position);
+
 	if(keys_down[SDLK_z])
 		camera.position[_X] += 1;
 	if(keys_down[SDLK_x])
@@ -90,8 +93,6 @@ void input_update () {
 	if(keys_down[SDLK_n])
 		camera.position[_Z] -= 1;
 
-	if (world_testCollision(boundingBox))
-		VectorCopy(old_position, camera.position);
 
 	// r for reset
 	if(keys_down[SDLK_r]){
