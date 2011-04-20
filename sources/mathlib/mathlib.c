@@ -47,9 +47,28 @@ void multiplyMats16f(float *mat1, float *mat2, float *out) {
 		for (j = 0; j < 4; j++) { // row
 			temp = 0;
 			for (k = 0; k < 4; k++) { // index
-				temp += mat1[i*4 + k] * mat[k*4 + j];
+				temp += mat1[i*4 + k] * mat2[k*4 + j];
 			}
 			out[i*4 + j] = temp;
 		}
 	}
+}
+
+
+// point is a row matrix
+// matrix is 4x4 in column-major order
+void rotatePoint(float *point, float *matrix) {
+	vect3_t out;
+	out[0] = point[0] * matrix[0] +
+			 point[1] * matrix[1] +
+			 point[2] * matrix[2];
+	out[1] = point[0] * matrix[4] +
+			 point[1] * matrix[5] +
+			 point[2] * matrix[6];
+	out[2] = point[0] * matrix[8] +
+			 point[1] * matrix[9] +
+			 point[2] * matrix[10];
+	point[0] = out[0];
+	point[1] = out[1];
+	point[2] = out[2];
 }

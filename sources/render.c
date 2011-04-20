@@ -10,6 +10,7 @@
 #include "common.h"
 #include "mathlib/mathlib.h"
 #include "models/renderer_models.h"
+#include "tga_loader/tga_loader.h"
 #include "camera.h"
 #include "render.h"
 #include "timestep.h"
@@ -162,10 +163,8 @@ void draw_skybox() {
     x2 = 2/4.0f;
     y1 = 3/4.0f;
     y2 = 2/4.0f;
-    textureID = skybox.num;
+    textureID = *skybox.num;
     glBindTexture(GL_TEXTURE_2D, textureID);
-    static void rotatePoint(float *point, float *matrix);
-    static void buildTransform(vect4_t q);
     glBegin(GL_QUADS);
 		glTexCoord2f(x1, y1); glVertex3f(  1.0f, -1.0f, -1.0f );
 		glTexCoord2f(x2, y1); glVertex3f(  1.0f,  1.0f, -1.0f );

@@ -18,7 +18,6 @@
 static vect_t **triangleList = NULL;
 static int numTriangles = 0;
 
-static void transform(float *point, vect4_t q);
 
 void printTriangle(float *triangle) {
 	int j;
@@ -55,6 +54,7 @@ void world_getPushBack(float boundingBox[3], vect3_t velocity, vect3_t pushback)
 	int i, j, k;
 	vect_t **triPtr = triangleList,
 		   *tri;
+	vect3_t triangleNormal;
 	vect4_t q;
 
 	// Reset the pushback value
@@ -95,20 +95,3 @@ void world_getPushBack(float boundingBox[3], vect3_t velocity, vect3_t pushback)
 }
 
 
-// point is a row matrix
-// matrix is 4x4 in column-major order
-static void rotatePoint(float *point, float *matrix) {
-	vect3_t out;
-	out[0] = point[0] * matrix[0] +
-			 point[1] * matrix[1] +
-			 point[2] * matrix[2];
-	out[1] = point[0] * matrix[4] +
-			 point[1] * matrix[5] +
-			 point[2] * matrix[6];
-	out[2] = point[0] * matrix[8] +
-			 point[1] * matrix[9] +
-			 point[2] * matrix[10];
-	point[0] = out[0];
-	point[1] = out[1];
-	point[2] = out[2];
-}
