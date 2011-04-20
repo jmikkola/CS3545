@@ -9,7 +9,7 @@
 #define RENDER_H_
 
 typedef struct {
-	int *num, *width, *height, *BPP;
+	int num, width, height, BPP;
 } TextureInfo;
 
 void r_setupProjection ();

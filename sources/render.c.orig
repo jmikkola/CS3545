@@ -167,7 +167,16 @@ void draw_skybox() {
     glColor4f(1,1,1,1);
 
     // Side 0 - bottom
+<<<<<<< HEAD
+    x1 = 1/4.0f;
+    x2 = 2/4.0f;
+    y1 = 3/4.0f;
+    y2 = 2/4.0f;
+    textureID = *skybox.num;
+    glBindTexture(GL_TEXTURE_2D, textureID);
+=======
     glBindTexture(GL_TEXTURE_2D, skybox_down.num);
+>>>>>>> new_skybox
     glBegin(GL_QUADS);
 		glTexCoord2f(x1, y2); glVertex3f(  1.0f, -1.0f, -1.0f );
 		glTexCoord2f(x1, y1); glVertex3f(  1.0f,  1.0f, -1.0f );
