@@ -10,18 +10,22 @@
 #include "common.h"
 #include "mathlib/mathlib.h"
 #include "models/renderer_models.h"
+#include "tga_loader/tga_loader.h"
 #include "camera.h"
 #include "render.h"
 #include "timestep.h"
 
 #include <stdio.h>
 
-const GLfloat flipMatrix[16] =
+static const GLfloat flipMatrix[16] =
 		{1.0, 0.0,  0.0, 0.0,
 		 0.0, 0.0, -1.0, 0.0,
 		 0.0, 1.0,  0.0, 0.0,
 		 0.0, 0.0,  0.0, 1.0};
-TextureInfo skybox, weapon;
+static TextureInfo weapon,
+	skybox_down, skybox_east,
+	skybox_north, skybox_south,
+	skybox_up, skybox_west;
 float ratio;
 
 /*
@@ -42,7 +46,13 @@ void r_init () {
 	renderer_model_loadASE("models/submarine.ASE", etrue);
 
 	// Load textures
-	skybox = load_texture("images/skybox003.tga");
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	skybox_down = load_texture("/home/jeremy/classs/CS3545/skyboxes/lostvalley_down.tga");
+	skybox_east = load_texture("/home/jeremy/classs/CS3545/skyboxes/lostvalley_east.tga");
+	skybox_north = load_texture("/home/jeremy/classs/CS3545/skyboxes/lostvalley_north.tga");
+	skybox_south = load_texture("/home/jeremy/classs/CS3545/skyboxes/lostvalley_south.tga");
+	skybox_up = load_texture("/home/jeremy/classs/CS3545/skyboxes/lostvalley_up.tga");
+	skybox_west = load_texture("/home/jeremy/classs/CS3545/skyboxes/lostvalley_west.tga");
 	weapon = load_texture("images/weapon001.tga");
 
 	camera_init();
@@ -147,8 +157,7 @@ void r_drawFrame () {
 }
 
 void draw_skybox() {
-	float x1, x2, y1, y2;
-	int textureID;
+	float x1 = 0, x2 = 1, y1 = 0, y2 = 1;
 	// Setup
 	glPushAttrib(GL_ENABLE_BIT);
 	glEnable(GL_TEXTURE_2D);
@@ -158,51 +167,34 @@ void draw_skybox() {
     glColor4f(1,1,1,1);
 
     // Side 0 - bottom
-    x1 = 1/4.0f;
-    x2 = 2/4.0f;
-    y1 = 3/4.0f;
-    y2 = 2/4.0f;
-    textureID = skybox.num;
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    glBindTexture(GL_TEXTURE_2D, skybox_down.num);
     glBegin(GL_QUADS);
-		glTexCoord2f(x1, y1); glVertex3f(  1.0f, -1.0f, -1.0f );
-		glTexCoord2f(x2, y1); glVertex3f(  1.0f,  1.0f, -1.0f );
-		glTexCoord2f(x2, y2); glVertex3f( -1.0f,  1.0f, -1.0f );
-		glTexCoord2f(x1, y2); glVertex3f( -1.0f, -1.0f, -1.0f );
+		glTexCoord2f(x1, y2); glVertex3f(  1.0f, -1.0f, -1.0f );
+		glTexCoord2f(x1, y1); glVertex3f(  1.0f,  1.0f, -1.0f );
+		glTexCoord2f(x2, y1); glVertex3f( -1.0f,  1.0f, -1.0f );
+		glTexCoord2f(x2, y2); glVertex3f( -1.0f, -1.0f, -1.0f );
     glEnd();
 
     // Side 1 - right
-    x1 = 0/4.0f;
-    x2 = 1/4.0f;
-    y1 = 3/4.0f;
-    y2 = 2/4.0f;
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    glBindTexture(GL_TEXTURE_2D, skybox_east.num);
     glBegin(GL_QUADS);
-		glTexCoord2f(x1, y1); glVertex3f(  1.0f, -1.0f,  1.0f );
-		glTexCoord2f(x2, y1); glVertex3f(  1.0f,  1.0f,  1.0f );
-		glTexCoord2f(x2, y2); glVertex3f(  1.0f,  1.0f, -1.0f );
-		glTexCoord2f(x1, y2); glVertex3f(  1.0f, -1.0f, -1.0f );
+		glTexCoord2f(x2, y2); glVertex3f(  1.0f, -1.0f,  1.0f );
+		glTexCoord2f(x1, y2); glVertex3f(  1.0f,  1.0f,  1.0f );
+		glTexCoord2f(x1, y1); glVertex3f(  1.0f,  1.0f, -1.0f );
+		glTexCoord2f(x2, y1); glVertex3f(  1.0f, -1.0f, -1.0f );
     glEnd();
 
     // Side 2 - top
-    x1 = 3/4.0f;
-    x2 = 4/4.0f;
-    y1 = 3/4.0f;
-    y2 = 2/4.0f;
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    glBindTexture(GL_TEXTURE_2D, skybox_up.num);
     glBegin(GL_QUADS);
-		glTexCoord2f(x1, y1); glVertex3f( -1.0f, -1.0f,  1.0f );
-		glTexCoord2f(x2, y1); glVertex3f( -1.0f,  1.0f,  1.0f );
-		glTexCoord2f(x2, y2); glVertex3f(  1.0f,  1.0f,  1.0f );
-		glTexCoord2f(x1, y2); glVertex3f(  1.0f, -1.0f,  1.0f );
+		glTexCoord2f(x2, y1); glVertex3f( -1.0f, -1.0f,  1.0f );
+		glTexCoord2f(x2, y2); glVertex3f( -1.0f,  1.0f,  1.0f );
+		glTexCoord2f(x1, y2); glVertex3f(  1.0f,  1.0f,  1.0f );
+		glTexCoord2f(x1, y1); glVertex3f(  1.0f, -1.0f,  1.0f );
     glEnd();
 
     // Side 3 - left
-    x1 = 2/4.0f;
-    x2 = 3/4.0f;
-    y1 = 3/4.0f;
-    y2 = 2/4.0f;
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    glBindTexture(GL_TEXTURE_2D, skybox_west.num);
     glBegin(GL_QUADS);
 		glTexCoord2f(x1, y1); glVertex3f( -1.0f, -1.0f, -1.0f );
 		glTexCoord2f(x2, y1); glVertex3f( -1.0f,  1.0f, -1.0f );
@@ -211,24 +203,16 @@ void draw_skybox() {
     glEnd();
 
     // Side 4 - front
-    x1 = 1/4.0f;
-    x2 = 2/4.0f;
-    y1 = 1/4.0f;
-    y2 = 2/4.0f;
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    glBindTexture(GL_TEXTURE_2D, skybox_north.num);
     glBegin(GL_QUADS);
-		glTexCoord2f(x2, y2); glVertex3f( -1.0f,  1.0f, -1.0f );
+		glTexCoord2f(x1, y1); glVertex3f( -1.0f,  1.0f, -1.0f );
 		glTexCoord2f(x2, y1); glVertex3f(  1.0f,  1.0f, -1.0f );
-		glTexCoord2f(x1, y1); glVertex3f(  1.0f,  1.0f,  1.0f );
+		glTexCoord2f(x2, y2); glVertex3f(  1.0f,  1.0f,  1.0f );
 		glTexCoord2f(x1, y2); glVertex3f( -1.0f,  1.0f,  1.0f );
     glEnd();
 
     // Side 5 - back
-    x1 = 1/4.0f;
-    x2 = 2/4.0f;
-    y1 = 3/4.0f;
-    y2 = 4/4.0f;
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    glBindTexture(GL_TEXTURE_2D, skybox_south.num);
     glBegin(GL_QUADS);
 		glTexCoord2f(x2, y1); glVertex3f( -1.0f, -1.0f, -1.0f );
 		glTexCoord2f(x2, y2); glVertex3f( -1.0f, -1.0f,  1.0f );
