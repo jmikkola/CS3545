@@ -56,15 +56,16 @@ void input_mouseMove (int xPos, int yPos) {
  * 'f' Sets movement to free, 'p' sets movement to person
  */
 void input_update () {
-	float distance = 60.0f * getTimeStep();
+	float distance = 1.0f;
+//	float distance = 60.0f * getTimeStep();
 	static float walkTheta = 0;
-	vect3_t old_position, boundingBox = {4, 4, 4}, pushback, velocity;
+	vect3_t old_position, boundingBox = {10, 10, 10}, pushback, velocity;
 	VectorCopy(camera.position, old_position);
 
 	// Reset velocity
-	velocity[0] = 0;
-	velocity[1] = 0;
-	velocity[2] = 0;
+	velocity[0] = 0; // x
+	velocity[1] = 0; // y
+	velocity[2] = 0; // z
 
 	// walk motion
 //	if (keys_down[SDLK_w] || keys_down[SDLK_s]) {
@@ -74,16 +75,16 @@ void input_update () {
 
 	// WASD movement
 	if(keys_down[SDLK_w]) {
-		velocity[0] -= distance;
-	}
-	if(keys_down[SDLK_s]) {
-		velocity[0] += distance;
-	}
-	if(keys_down[SDLK_a]) {
 		velocity[1] -= distance;
 	}
-	if(keys_down[SDLK_d]) {
+	if(keys_down[SDLK_s]) {
 		velocity[1] += distance;
+	}
+	if(keys_down[SDLK_a]) {
+		velocity[0] -= distance;
+	}
+	if(keys_down[SDLK_d]) {
+		velocity[0] += distance;
 	}
 
 	world_getPushBack(boundingBox, velocity, pushback);
@@ -91,9 +92,8 @@ void input_update () {
 	velocity[1] += pushback[1];
 	velocity[2] += pushback[2];
 
-	camera_translateForward(velocity[0]);
-	camera_translateStrafe(velocity[1]);
-	camera.position[_Z] += velocity[2]; // Is this right?
+	camera_translateForward(velocity[1]);
+	camera_translateStrafe(velocity[0]);
 
 	if(keys_down[SDLK_z])
 		camera.position[_X] += 1;

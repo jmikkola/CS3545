@@ -42,12 +42,13 @@ void multiplyQuaternoins(vect4_t q1, vect4_t q2, vect4_t out) {
 
 // Matrices are in column-major order
 void multiplyMats16f(float *mat1, float *mat2, float *out) {
-	int i, j, k, temp;
+	int i, j, k;
+	float temp;
 	for (i = 0; i < 4; i++) { // column
 		for (j = 0; j < 4; j++) { // row
 			temp = 0;
 			for (k = 0; k < 4; k++) { // index
-				temp += mat1[i*4 + k] * mat2[k*4 + j];
+				temp += mat1[j + 4*k] * mat2[4*i + k];
 			}
 			out[i*4 + j] = temp;
 		}
