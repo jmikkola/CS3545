@@ -12,6 +12,7 @@
 #include "models/renderer_models.h"
 #include "tga_loader/tga_loader.h"
 #include "camera.h"
+#include "collisions.h"
 #include "render.h"
 #include "timestep.h"
 
@@ -44,9 +45,12 @@ void r_init () {
 
 	// Load model
 	renderer_model_loadASE("models/submarine.ASE", etrue);
+//	renderer_model_loadASE("/home/jeremy/test.ASE", etrue);
 
 	// Load textures
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	skybox_down = load_texture("/home/jeremy/classs/CS3545/skyboxes/lostvalley_down.tga");
 	skybox_east = load_texture("/home/jeremy/classs/CS3545/skyboxes/lostvalley_east.tga");
 	skybox_north = load_texture("/home/jeremy/classs/CS3545/skyboxes/lostvalley_north.tga");
@@ -131,10 +135,10 @@ void r_drawFrame () {
 		frameCount = 0;
 		subtractAcc(second);
 
-//		int* useCount = getUseCounts();
-//		printf("# test uses: test 1 - %d, test 2 - %d, test 3 - %d, test 4 - %d\n",
-//				useCount[0], useCount[1], useCount[2], useCount[3]);
-//		resetUseCount();
+		int* useCount = getUseCounts();
+		printf("# test uses: test 1 - %d, test 2 - %d, test 3 - %d, test 4 - %d\n",
+				useCount[0], useCount[1], useCount[2], useCount[3]);
+		resetUseCount();
 	}
 	frameCount++;
 
